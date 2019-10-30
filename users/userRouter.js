@@ -16,7 +16,26 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/posts', (req, res) => {
-
+    const id = Number(req.params.id);
+    const newPost = req.body;
+    newPost.text ?
+    id ? // is it a valid id?
+    userDb.getById(id)
+    .then(user => {
+       user ?  // user is found
+        postDb.insert({...newPost, user_id: id})
+        .then(addedPost => res.status(201).json(addedPost))
+        .catch(err => res.status(500).json({ error: 'Could not add post'}))
+       :
+    res.status(404).json({ error: 'That user does not exist'})
+    }) 
+    
+    .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
+    :
+    // invalid id
+    res.status(400).json({ error: 'Please include a valid id'})
+    :
+    res.status(400).json({ error:'Please include text for the post'})// if no text in request body
 });
 
 router.get('/', (req, res) => {
