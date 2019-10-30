@@ -4,6 +4,7 @@ const postDb = require('../posts/postDb');
 
 const validateUser = require('./validateUser')
 const validateUserId = require('./validateUserId')
+const validatePost = require('../posts/validatePost')
 
 
 const router = express.Router();
@@ -15,7 +16,7 @@ router.post('/', validateUser, (req, res) => {
     .catch(err => res.status(500).json({ error: 'Failed to add new user'}))
 });
 
-router.post('/:id/posts', (req, res) => {
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
     const id = Number(req.params.id);
     const newPost = req.body;
     userDb.getById(id)
@@ -37,7 +38,7 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({ error: 'Could not retrieve users'}))
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', validateUserId, (req, res) => {
     const id = Number(req.params.id)
     userDb.getById(id)
     .then(user => {
@@ -46,7 +47,7 @@ router.get('/:id', (req, res) => {
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
 });
 
-router.get('/:id/posts', (req, res) => {
+router.get('/:id/posts', validateUserId, (req, res) => {
     const id = Number(req.params.id);
     userDb.getById(id)
     .then(user => {
@@ -68,7 +69,7 @@ router.get('/:id/posts', (req, res) => {
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user\'s posts'}))
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateUserId, (req, res) => {
     // delete a user by id
     const id = req.params.id;
     userDb.getById(id)
@@ -83,7 +84,7 @@ router.delete('/:id', (req, res) => {
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateUserId, (req, res) => {
     // edit a user by id
     const id = Number(req.params.id);
     const updatedUser = req.body;

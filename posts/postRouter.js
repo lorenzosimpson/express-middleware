@@ -1,6 +1,6 @@
 const express = require('express');
 const postDb = require('./postDb');
-const validatePosts = require('./validatePosts')
+
 
 const router = express.Router();
 
