@@ -6,20 +6,14 @@ const router = express.Router();
 
 router.post('/', (req, res) => {
     const newUser = req.body;
-
-    newUser.name ?
     userDb.insert(newUser)
     .then(resource => res.status(200).json(resource))
     .catch(err => res.status(500).json({ error: 'Failed to add new user'}))
-    :
-    res.status(400).json({ error: 'Please include a name'})
 });
 
 router.post('/:id/posts', (req, res) => {
     const id = Number(req.params.id);
     const newPost = req.body;
-    newPost.text ?
-    id ? // is it a valid id?
     userDb.getById(id)
     .then(user => {
        user ?  // user is found
@@ -31,11 +25,6 @@ router.post('/:id/posts', (req, res) => {
     }) 
     
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
-    :
-    // invalid id
-    res.status(400).json({ error: 'Please include a valid id'})
-    :
-    res.status(400).json({ error:'Please include text for the post'})// if no text in request body
 });
 
 router.get('/', (req, res) => {
@@ -46,19 +35,15 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = Number(req.params.id)
-    id ?
     userDb.getById(id)
     .then(user => {
-        user ? res.status(200).json(user) : res.status(404).json({ error: 'That user does not exist'})
+        res.status(200).json(user) 
     })
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
-    :
-    res.status(400).json({ error: 'Please include a valid id'})
 });
 
 router.get('/:id/posts', (req, res) => {
     const id = Number(req.params.id);
-    id ?
     userDb.getById(id)
     .then(user => {
         user ?
@@ -77,14 +62,11 @@ router.get('/:id/posts', (req, res) => {
         // user doesn't exist
     })
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user\'s posts'}))
-    :
-    res.status(400).json({ error: 'Please include a valid id'})
 });
 
 router.delete('/:id', (req, res) => {
     // delete a user by id
     const id = req.params.id;
-    id ?
     userDb.getById(id)
     .then(user => {
         user ?
@@ -95,16 +77,12 @@ router.delete('/:id', (req, res) => {
         res.status(404).json({ error: 'That user does not exist'})
     })
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
-    :
-    res.status(400).json({ error: 'Please include a valid id'})
-
 });
 
 router.put('/:id', (req, res) => {
     // edit a user by id
     const id = Number(req.params.id);
     const updatedUser = req.body;
-    id ?
     userDb.getById(id)
     .then(user => {
         user ? 
@@ -118,15 +96,12 @@ router.put('/:id', (req, res) => {
         res.status(404).json({ error: 'That user does not exist'})
     })
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user' }))
-    :
-    res.status(400).json({ error: 'Please include a valid id'})
+
 });
 
 //custom middleware
 
-function validateUserId(req, res, next) {
 
-};
 
 function validateUser(req, res, next) {
 
@@ -135,5 +110,7 @@ function validateUser(req, res, next) {
 function validatePost(req, res, next) {
 
 };
+
+
 
 module.exports = router;
