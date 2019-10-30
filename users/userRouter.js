@@ -82,6 +82,21 @@ router.get('/:id/posts', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
+    // delete a user by id
+    const id = req.params.id;
+    id ?
+    userDb.getById(id)
+    .then(user => {
+        user ?
+        userDb.remove(id)
+        .then(deleted => res.status(200).json(user))
+        .catch(err => res.status(500).json({ error: 'Could not remove user'}))
+        :
+        res.status(404).json({ error: 'That user does not exist'})
+    })
+    .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
+    :
+    res.status(400).json({ error: 'Please include a valid id'})
 
 });
 
