@@ -1,5 +1,6 @@
 const express = require('express');
 const postDb = require('./postDb');
+const validatePosts = require('./validatePosts')
 
 const router = express.Router();
 
@@ -23,8 +24,6 @@ router.put('/:id', (req, res) => {
 
 // custom middleware
 
-function validatePostId(req, res, next) {
 
-};
 
 module.exports = router;

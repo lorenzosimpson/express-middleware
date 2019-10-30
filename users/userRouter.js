@@ -2,9 +2,13 @@ const express = require('express');
 const userDb = require('./userDb');
 const postDb = require('../posts/postDb');
 
+const validateUser = require('./validateUser')
+const validateUserId = require('./validateUserId')
+
+
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', validateUser, (req, res) => {
     const newUser = req.body;
     userDb.insert(newUser)
     .then(resource => res.status(200).json(resource))
@@ -99,17 +103,9 @@ router.put('/:id', (req, res) => {
 
 });
 
-//custom middleware
 
 
 
-function validateUser(req, res, next) {
-
-};
-
-function validatePost(req, res, next) {
-
-};
 
 
 
