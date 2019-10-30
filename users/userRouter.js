@@ -101,7 +101,25 @@ router.delete('/:id', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-
+    // edit a user by id
+    const id = Number(req.params.id);
+    const updatedUser = req.body;
+    id ?
+    userDb.getById(id)
+    .then(user => {
+        user ? 
+        userDb.update(id, updatedUser)
+        .then(updated => {
+            userDb.getById(id)
+            .then(updatedUser => res.status(200).json(updatedUser))
+        })
+        .catch(err => res.status(500).json({ error: 'Could not update user'}))
+        :
+        res.status(404).json({ error: 'That user does not exist'})
+    })
+    .catch(err => res.status(500).json({ error: 'There was an error fetching the user' }))
+    :
+    res.status(400).json({ error: 'Please include a valid id'})
 });
 
 //custom middleware
