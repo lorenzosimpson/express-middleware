@@ -32,10 +32,14 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
 });
 
-router.get('/', (req, res) => {
-    userDb.get()
-    .then(users => res.status(200).json(users))
-    .catch(err => res.status(500).json({ error: 'Could not retrieve users'}))
+router.get('/', async (req, res) => {
+    try {
+        const users = await userDb.get()
+        res.status(200).json(users)
+    }
+    catch {
+        res.status(500).json({ error: 'Could not retrieve users'})
+    }
 });
 
 router.get('/:id', validateUserId, (req, res) => {
@@ -47,26 +51,41 @@ router.get('/:id', validateUserId, (req, res) => {
     .catch(err => res.status(500).json({ error: 'There was an error fetching the user'}))
 });
 
-router.get('/:id/posts', validateUserId, (req, res) => {
+router.get('/:id/posts', validateUserId, async (req, res) => {
     const id = Number(req.params.id);
-    userDb.getById(id)
-    .then(user => {
-        user ?
-        // loop in posts db
-        postDb.get()
-        .then(posts => {
-            const userPosts = posts.filter(post => post.user_id === id)
-            userPosts.length ?
-            res.status(200).json(userPosts)
-            :
+    try {
+        const posts = await postDb.get()
+        const userPosts = posts.filter(post => post.user_id === id)
+        if (userPosts.length) {
+            res.status(200).json(userPosts) 
+        }
+        else {
             res.status(404).json({ error: 'That user has no posts'})
-        })
-        .catch(err => res.status(500).json({ error: 'Could not retrieve posts'}))
-        :
-        res.status(404).json({ error: 'That user does not exist'})
-        // user doesn't exist
-    })
-    .catch(err => res.status(500).json({ error: 'There was an error fetching the user\'s posts'}))
+        }
+        !posts ? res.status(500).json({ error: 'Could not retrieve posts'}) : null
+    }
+    catch (err) {
+        res.status(500).json({ error: 'There was an error fetching the user\'s posts'})
+    }
+    // const id = Number(req.params.id);
+    // userDb.getById(id)
+    // .then(user => {
+    //     user ?
+    //     // loop in posts db
+    //     postDb.get()
+    //     .then(posts => {
+    //         const userPosts = posts.filter(post => post.user_id === id)
+    //         userPosts.length ?
+    //         res.status(200).json(userPosts)
+    //         :
+    //         res.status(404).json({ error: 'That user has no posts'})
+    //     })
+    //     .catch(err => res.status(500).json({ error: 'Could not retrieve posts'}))
+    //     :
+    //     res.status(404).json({ error: 'That user does not exist'})
+    //     // user doesn't exist
+    // })
+    // .catch(err => res.status(500).json({ error: 'There was an error fetching the user\'s posts'}))
 });
 
 router.delete('/:id', validateUserId, (req, res) => {
